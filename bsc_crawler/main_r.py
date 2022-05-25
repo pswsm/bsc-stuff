@@ -1,27 +1,36 @@
 '''Crawler v0.0.1'''
-import requests, asyncio, re, pyquery
+#from warcio.capture_http import capture_http
+import requests
 from pathlib import Path
-from pyquery import PyQuery as pq
-
+#from ssl import ConnectionResetError
 
 def get_urls(url_file: str) -> list[str]:
+    '''Reads domains from file and splits them'''
     urls: list[str] = Path(url_file).read_text().split('\n')
     return urls
 
-async def fetch_html(orig_url: str) -> str:
+def fetch_html(orig_url: str) -> str:
+    '''Requests html from given url.
+       Tries https, if timeout falls back to http'''
     try:
-        doc = requests.get('https://' + orig_url, timeout=10)
+        doc = requests.get('https://' + orig_url, timeout=3)
+        result: str = f'{orig_url} is online'
     except requests.ConnectTimeout:
-        doc = requests.get('http://' + orig_url, timeout=10)
-
-    print(doc.text)
-    return doc.text
+        try:
+            doc = requests.get('http://' + orig_url, timeout=3)
+            result: str = f'"{orig_url}" is online'
+        except requests.ConnectTimeout:
+            result: str = f'"{orig_url}" timed out'
+    except requests.ConnectionError:
+        result: str = f'"{orig_url}" not available'
+ 
+    print(result)
+    return result
 
 def main():
     '''Main function. Runs the above'''
     urls: list[str] = get_urls('domains_cat.txt')
-    loop = asyncio.new_event_loop()
-    loop.run_until_complete(fetch_html(urls))
-
+    for url in urls:
+        fetch_html(url)
 
 main()
