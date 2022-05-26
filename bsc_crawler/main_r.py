@@ -7,7 +7,7 @@ import requests
 
 def filter(req, resp, req_record):
     '''If request stattsucode is not 200, return none'''
-    if resp.http_header.get_statuscode() != "200":
+    if resp.http_headers.get_statuscode() != "200":
         return None, None
     return req, resp
 
