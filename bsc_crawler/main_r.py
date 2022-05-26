@@ -10,9 +10,10 @@ def filter(req, resp, req_record):
     try:
         if resp.http_headers.get_statuscode() != "200":
             return None, None
+        return req, resp
     except AttributeError:
         print('No headers')
-    return req, resp
+
 
 def get_urls(url_file: str) -> list[str]:
     '''Reads domains from file and splits them'''
