@@ -24,32 +24,40 @@ def get_urls(url_file: str) -> list[str]:
     return urls
 
 
+def check_live_url(url: str) -> bool:
+    '''Check if the url is live'''
+    resp = requests.head(url)
+    if resp:
+        return True
+    return False
+
+
 def search_href(html: str) -> str:
     '''Searches an html text for a tags, and returns the link'''
     return ''
 
 
-def fetch_html(orig_url: str) -> str:
+def fetch_html(orig_url: str):
     '''Requests html from given url.
        Tries https, if timeout falls back to http'''
-    try:
-        with capture_http(f'{orig_url}.warc.gz', filter):
-            requests.get('https://' + orig_url, timeout=3, verify=False)
-        result: str = f'"{orig_url}" is online (https)'
-    except requests.ConnectTimeout:
-        result: str = f'"{orig_url}" timed out'
-    except requests.ConnectionError:
-        result: str = f'"{orig_url}": Could not connect'
-    try:
-        with capture_http(f'{orig_url}.warc.gz', filter):
-            requests.get('http://' + orig_url, timeout=3, verify=False)
-        result: str = f'"{orig_url}" is online (http)'
-    except requests.ConnectTimeout:
-        result: str = f'"{orig_url}" timed out'
-    except requests.ConnectionError:
-        result: str = f'"{orig_url}": Could not connect'
-    print(result)
-    return result
+    if check_live_url(orig_url):
+        try:
+            with capture_http(f'{orig_url}.warc.gz', filter):
+                requests.get('https://' + orig_url, timeout=3, verify=False)
+            result: str = f'"{orig_url}" is online (https)'
+        except requests.ConnectTimeout:
+            result: str = f'"{orig_url}" timed out'
+        except requests.ConnectionError:
+            result: str = f'"{orig_url}": Could not connect'
+        try:
+            with capture_http(f'{orig_url}.warc.gz', filter):
+                requests.get('http://' + orig_url, timeout=3, verify=False)
+            result: str = f'"{orig_url}" is online (http)'
+        except requests.ConnectTimeout:
+            result: str = f'"{orig_url}" timed out'
+        except requests.ConnectionError:
+            result: str = f'"{orig_url}": Could not connect'
+        print(result)
 
 
 def main():
