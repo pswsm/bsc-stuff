@@ -32,25 +32,25 @@ def fetch_html(orig_url: str) -> str:
     with capture_http(f'{orig_url}.warc.gz', filter):
         try:
             try:
-                doc = requests.get('https://' + orig_url, timeout=3)
+                doc = requests.get('https://' + orig_url, timeout=3, verify=False)
                 result: str = f'"{orig_url}" is online'
             except requests.ConnectTimeout:
                 result: str = f'"{orig_url}" timed out'
-            try:
-                doc = requests.get('http://' + orig_url, timeout=3)
-                result: str = f'"{orig_url}" is online'
-            except requests.ConnectTimeout:
-                result: str = f'"{orig_url}" timed out'
-            try:
-                doc = requests.get('https://www.' + orig_url, timeout=3)
-                result: str = f'"{orig_url}" is online'
-            except requests.ConnectTimeout:
-                result: str = f'"{orig_url}" timed out'
-            try:
-                doc = requests.get('http://www.' + orig_url, timeout=3)
-                result: str = f'"{orig_url}" is online'
-            except requests.ConnectTimeout:
-                result: str = f'"{orig_url}" timed out'
+            # try:
+            #     doc = requests.get('http://' + orig_url, timeout=3)
+            #     result: str = f'"{orig_url}" is online'
+            # except requests.ConnectTimeout:
+            #     result: str = f'"{orig_url}" timed out'
+            # try:
+            #     doc = requests.get('https://www.' + orig_url, timeout=3)
+            #     result: str = f'"{orig_url}" is online'
+            # except requests.ConnectTimeout:
+            #     result: str = f'"{orig_url}" timed out'
+            # try:
+            #     doc = requests.get('http://www.' + orig_url, timeout=3)
+            #     result: str = f'"{orig_url}" is online'
+            # except requests.ConnectTimeout:
+            #     result: str = f'"{orig_url}" timed out'
         except Exception as err:
             result: str = f'{err}'
     print(result)
