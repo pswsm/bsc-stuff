@@ -24,11 +24,22 @@ def get_urls(url_file: str) -> list[str]:
     return urls
 
 
-def check_live_url(url: str) -> bool:
+def url_is_live(url: str) -> bool:
     '''Check if the url is live'''
-    resp = requests.head(url)
-    if resp:
-        return True
+    try:
+        resp = requests.head(f'https://{url}')
+        if resp:
+            return True
+        return False
+    except:
+        pass
+    try:
+        resp = requests.head(f'http://{url}')
+        if resp:
+            return True
+        return False
+    except:
+        pass
     return False
 
 
@@ -40,7 +51,7 @@ def search_href(html: str) -> str:
 def fetch_html(orig_url: str):
     '''Requests html from given url.
        Tries https, if timeout falls back to http'''
-    if check_live_url(orig_url):
+    if url_is_live(orig_url):
         try:
             with capture_http(f'{orig_url}.warc.gz', filter):
                 requests.get('https://' + orig_url, timeout=3, verify=False)
