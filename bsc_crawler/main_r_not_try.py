@@ -30,14 +30,16 @@ def search_href(html: str) -> str:
     return ''
 
 
-def fetch_html(orig_url: str) -> tuple[str, Response]:
+def fetch_html(orig_url: str):
     '''Requests html from given url.
        Tries https, if timeout falls back to http'''
     with capture_http(f'{orig_url}.warc.gz', filter):
-        doc = requests.get('https://' + orig_url, timeout=3, verify=False)
-        result: str = f'"{orig_url}" is online'
+        try:
+            result: str = f'"{orig_url}" is online'
+            requests.get('https://' + orig_url, timeout=3, verify=False)
+        except requests.ConnectTimeout as timeout:
+            result: str = f"{timeout}"
     print(result)
-    return result, doc
 
 
 def main():
