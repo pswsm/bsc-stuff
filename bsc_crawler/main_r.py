@@ -27,14 +27,14 @@ def get_urls(url_file: str) -> list[str]:
 def url_is_live(url: str) -> bool:
     '''Check if the url is live'''
     try:
-        resp = requests.head(f'https://{url}')
+        resp = requests.head(f'https://{url}', timeout=3)
         if resp:
             return True
         return False
     except:
         pass
     try:
-        resp = requests.head(f'http://{url}')
+        resp = requests.head(f'http://{url}', timeout=3)
         if resp:
             return True
         return False
@@ -69,6 +69,7 @@ def fetch_html(orig_url: str):
         except requests.ConnectionError:
             result: str = f'"{orig_url}": Could not connect'
         print(result)
+    print(f"\"{orig_url}\" not alive")
 
 
 def main():
