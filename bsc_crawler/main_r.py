@@ -32,21 +32,22 @@ def search_href(html: str) -> str:
 def fetch_html(orig_url: str) -> str:
     '''Requests html from given url.
        Tries https, if timeout falls back to http'''
-    with capture_http(f'{orig_url}.warc.gz', filter):
-        try:
+    try:
+        with capture_http(f'{orig_url}.warc.gz', filter):
             requests.get('https://' + orig_url, timeout=3, verify=False)
             result: str = f'"{orig_url}" is online (https)'
-        except requests.ConnectTimeout:
-            result: str = f'"{orig_url}" timed out'
-        except requests.ConnectionError:
-            result: str = f'"{orig_url}": Could not connect'
-        try:
+    except requests.ConnectTimeout:
+        result: str = f'"{orig_url}" timed out'
+    except requests.ConnectionError:
+        result: str = f'"{orig_url}": Could not connect'
+    try:
+        with capture_http(f'{orig_url}.warc.gz', filter):
             requests.get('http://' + orig_url, timeout=3, verify=False)
             result: str = f'"{orig_url}" is online (http)'
-        except requests.ConnectTimeout:
-            result: str = f'"{orig_url}" timed out'
-        except requests.ConnectionError:
-            result: str = f'"{orig_url}": Could not connect'
+    except requests.ConnectTimeout:
+        result: str = f'"{orig_url}" timed out'
+    except requests.ConnectionError:
+        result: str = f'"{orig_url}": Could not connect'
     print(result)
     return result
 
