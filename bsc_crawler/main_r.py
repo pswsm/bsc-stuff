@@ -35,7 +35,7 @@ def fetch_html(orig_url: str) -> str:
     try:
         with capture_http(f'{orig_url}.warc.gz', filter):
             requests.get('https://' + orig_url, timeout=3, verify=False)
-            result: str = f'"{orig_url}" is online (https)'
+        result: str = f'"{orig_url}" is online (https)'
     except requests.ConnectTimeout:
         result: str = f'"{orig_url}" timed out'
     except requests.ConnectionError:
@@ -43,7 +43,7 @@ def fetch_html(orig_url: str) -> str:
     try:
         with capture_http(f'{orig_url}.warc.gz', filter):
             requests.get('http://' + orig_url, timeout=3, verify=False)
-            result: str = f'"{orig_url}" is online (http)'
+        result: str = f'"{orig_url}" is online (http)'
     except requests.ConnectTimeout:
         result: str = f'"{orig_url}" timed out'
     except requests.ConnectionError:
