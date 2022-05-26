@@ -39,11 +39,15 @@ def fetch_html(orig_url: str) -> str:
                 result: str = f'"{orig_url}" is online (https)'
             except requests.ConnectTimeout:
                 result: str = f'"{orig_url}" timed out'
+            except requests.ConnectionError:
+                result: str = f'"{orig_url}": Could not connect'
             try:
                 requests.get('http://' + orig_url, timeout=3, verify=False)
                 result: str = f'"{orig_url}" is online (http)'
             except requests.ConnectTimeout:
                 result: str = f'"{orig_url}" timed out'
+            except requests.ConnectionError:
+                result: str = f'"{orig_url}": Could not connect'
         except requests.ConnectTimeout:
             print('no conect')
     print(result)
