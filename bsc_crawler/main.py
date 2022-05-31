@@ -12,7 +12,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 def filter(req, resp, req_record):
     '''If request stattsucode is not 200, do not create a warc file'''
     try:
-        if resp.http_headers.get_statuscode() != "200":
+        if resp.http_headers.get_statuscode() != 200:
             return None, None
     except AttributeError:
        return None, None 
@@ -23,18 +23,16 @@ def url_is_live(url: str) -> bool:
     '''Check if the url is live'''
     try:
         try:
-            resp = requests.head(f'https://{url}', timeout=3)
-            if resp:
+            resp = requests.get(f'https://{url}', verify=False, timeout=3).status_code
+            if resp == 200:
                 return True
-            return False
         except:
             pass
     except:
         try:
-            resp = requests.head(f'http://{url}', timeout=3)
-            if resp:
+            resp = requests.get(f'http://{url}', verify=False, timeout=3).status_code
+            if resp == 200:
                 return True
-            return False
         except:
             pass
     return False
@@ -53,27 +51,26 @@ def fetch_html(orig_url: str):
         try:
             try:
                 with capture_http(f'warcs/{orig_url}.warc.gz', filter):
-                    requests.get('https://' + orig_url, timeout=3, verify=False, allow_redirects = False)
+                    requests.get('https://' + orig_url, timeout=3, verify=False)
                 result: str = f'"{orig_url}" is online (https)'
             except requests.ConnectTimeout:
-                result: str = f'"{orig_url}" timed out'
+                result: str = f'"{orig_url}" timed out (https)'
             except requests.ConnectionError:
-                result: str = f'"{orig_url}": Could not connect'
+                result: str = f'"{orig_url}": Could not connect (https)'
             except requests.ReadTimeout:
-                result: str = f'"{orig_url}" timed out'
+                result: str = f'"{orig_url}" timed out (https)'
         except:
             try:
                 with capture_http(f'warcs/{orig_url}.warc.gz', filter):
-                    requests.get('http://' + orig_url, timeout=3, verify=False, allow_redirects = False)
+                    requests.get('http://' + orig_url, timeout=3, verify=False)
                 result: str = f'"{orig_url}" is online (http)'
             except requests.ConnectTimeout:
-                result: str = f'"{orig_url}" timed out'
+                result: str = f'"{orig_url}" timed out (hhtp)'
             except requests.ConnectionError:
-                result: str = f'"{orig_url}": Could not connect'
+                result: str = f'"{orig_url}": Could not connect (http)'
             except requests.ReadTimeout:
-                result: str = f'"{orig_url}" timed out'
+                result: str = f'"{orig_url}" timed out (http)'
         print(result)
-    print(f"\"{orig_url}\" not alive")
 
 
 def main():
@@ -85,7 +82,4 @@ def main():
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("Killed :P")
+    main()
