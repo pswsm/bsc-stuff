@@ -48,29 +48,12 @@ def fetch_html(orig_url: str):
     '''Requests html from given url.
        Tries https, if timeout falls back to http'''
     if url_is_live(orig_url):
-        try:
+        with capture_http(f'warcs/{orig_url}.warc.gz'):
             try:
-                with capture_http(f'warcs/{orig_url}.warc.gz', filter):
-                    requests.get('https://' + orig_url, timeout=3, verify=False)
-                result: str = f'"{orig_url}" is online (https)'
-            except requests.ConnectTimeout:
-                result: str = f'"{orig_url}" timed out (https)'
-            except requests.ConnectionError:
-                result: str = f'"{orig_url}": Could not connect (https)'
-            except requests.ReadTimeout:
-                result: str = f'"{orig_url}" timed out (https)'
-        except:
-            try:
-                with capture_http(f'warcs/{orig_url}.warc.gz', filter):
-                    requests.get('http://' + orig_url, timeout=3, verify=False)
-                result: str = f'"{orig_url}" is online (http)'
-            except requests.ConnectTimeout:
-                result: str = f'"{orig_url}" timed out (hhtp)'
-            except requests.ConnectionError:
-                result: str = f'"{orig_url}": Could not connect (http)'
-            except requests.ReadTimeout:
-                result: str = f'"{orig_url}" timed out (http)'
-        print(result)
+                requests.get('https://' + orig_url, timeout=3, verify=False)
+                print(f'"{orig_url}" is online')
+            except (requests.ReadTimeout):
+                print(f'"{orig_url}" timed out.')
 
 
 def main():
