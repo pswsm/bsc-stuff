@@ -12,10 +12,11 @@ def get_html(url: str) -> str:
 
 def get_links(html: str) -> set[str]:
     '''Searches an html text for urls in <a>'''
-    links: list[str] = re.findall(r"a href=\"([/\w]+)\"", html)
+    regexp: str = r"a.+href=\"([\w\.]*[/\w]+[\.(cat|com|es|net)]*)\""
+    links: list[str] = re.findall(regexp, html)
     return set(links)
 
 if __name__ == '__main__':
     text: str = get_html('acn.cat')
     for link in get_links(text):
-        print(requests.get('https://acn.cat' + link).text, f"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+        print(requests.get('https://acn.cat' + link).text, "\n" * 5)
