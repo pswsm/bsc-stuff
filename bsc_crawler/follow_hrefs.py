@@ -18,6 +18,14 @@ def get_html(url: str) -> str:
     return ''
 
 
+def correct_link(inner_link: str) -> str:
+    '''Checks if html link is correct and corrects it:
+        some/link.html -> /some/link.html'''
+    if not link.startswith("/"):
+        return f"/{inner_link}"
+    return inner_link
+
+
 def get_links(html: str) -> set[str]:
     '''Searches an html text for urls in <a>'''
     # regex: str = r"<a.+href=\"((?:[\w]+\.?)?[/\w]+(?:\.cat)?)\".*>"
@@ -29,5 +37,6 @@ def get_links(html: str) -> set[str]:
 if __name__ == '__main__':
     text: str = get_html('esperit.cat')
     for link in get_links(text):
-        print(link)
-#       print(requests.get(f'https://esperit.cat{link}').text, f"\n\n\n\n\n\n\n\n")
+        corrected_link: str = correct_link(link)
+        print(corrected_link)
+#       print(requests.get(f'https://esperit.cat{link}').text, "\n" * 5)
