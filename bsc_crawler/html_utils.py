@@ -21,13 +21,15 @@ def get_html(url: str) -> str:
 def get_links(html: str) -> set[str]:
     '''Searches an html text for urls in <a>'''
     # regex: str = r"<a.+href=\"((?:[\w]+\.?)?[/\w]+(?:\.cat)?)\".*>"
-    regex: str = r"<a.+href=\"(?:https://|[\w:]+\.|http://)?([\/\w\-]+(?:\.cat)?[\/\w+\-]+)\".*>"
+    regex: str = r"<a.+href=\"(?:https://|[\w:]+\.(?!html)|http://)?([\/\w\-]+(?:\.cat)?[\/\w+\-]+)\".*>"
     links: list[str] = re.findall(regex, html, re.UNICODE)
     return set(links)
 
 
 if __name__ == '__main__':
-    text: str = get_html('esperit.cat')
-    for link in remove_prefix('esperit.cat', get_links(text)):
+    text: str = get_html('pswsm.cat')
+    links: set[str] = get_links(text)
+    print(links)
+    for link in remove_prefix('pswsm.cat', links):
         print(link)
 #       print(requests.get(f'https://esperit.cat{link}').text, f"\n\n\n\n\n\n\n\n")
