@@ -1,13 +1,8 @@
 '''Does everything related to network and warcs'''
 from pathlib import Path
 from warcio.capture_http import capture_http
-import requests, file_utils
-import html_utils
-# from ssl import ConnectionResetError
-
-# Disables warning for having SSL verification disabled
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+import requests
+from url_is_live import url_is_live
 
 
 def filter(req, resp, req_record):
@@ -20,21 +15,26 @@ def filter(req, resp, req_record):
     return req, resp
 
 
-
-
-def fetch_html(orig_url: str, folder: str = '', autoprotocol: bool = True):
+def fetch_html(orig_url: str, folder: str = '', warc_folder: str = 'warcs'):
     '''Requests html from given url.
        Uses protocol (http or https) from
        return value of is_live() function'''
     is_live, protocol = url_is_live(orig_url)
     if is_live:
-        with capture_http(f'warcs/{orig_url.replace(":", "_").replace("/", "_")}{folder.replace("/", "_")}.warc.gz'):
-            try:
-                requests.get(f'{protocol}{orig_url}{folder}', timeout=3, verify=False)
-                print(f'"{orig_url}{folder}" is online')
-            except (requests.ReadTimeout, requests.ConnectionError):
-                print(f'"{orig_url}{folder}" timed out.')
+        with capture_http(f'{warc_folder}/{orig_url.replace("/", "_")}{folder.replace("/", "_")}.warc.gz', filter):
+            requests.get(f'{protocol}{orig_url}{folder}', timeout=3)
+            print(f'"{orig_url}{folder}" is online')
 
 
 if __name__ == "__main__":
-    print("Do something")
+    from html_utils import get_html, remove_prefix, get_links
+    done_links: list[str] = [ 'pswsm.cat' ]
+    html: str = get_html('pswsm.cat')
+    fetch_html('pswsm.cat', warc_folder='tests/warc_utils')
+    links: set[str] = remove_prefix('pswsm.cat', get_links(html))
+    print(links)
+    for link in links:
+        if not link.startswith('/'):
+            link = f"/{link}"
+        fetch_html('pswsm.cat', folder=link, warc_folder='tests/warc_utils')
+        done_links.append(link)
