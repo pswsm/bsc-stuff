@@ -2,7 +2,7 @@
 from pathlib import Path
 from warcio.capture_http import capture_http
 import requests, file_utils
-import follow_hrefs
+import html_utils
 # from ssl import ConnectionResetError
 
 # Disables warning for having SSL verification disabled
@@ -20,25 +20,6 @@ def filter(req, resp, req_record):
     return req, resp
 
 
-def url_is_live(url: str) -> tuple[bool, str]:
-    '''Check if the url is live.
-       Returns a tuple, consisting of a bool indicating if the url is live,
-       and a string with the protocol used (either http or https)'''
-    try:
-        try:
-            resp: int = requests.get(f'https://{url}', verify=False, timeout=3).status_code
-            if resp == 200:
-                return True, 'https://'
-        except:
-            pass
-    except:
-        try:
-            resp: int = requests.get(f'http://{url}', verify=False, timeout=3).status_code
-            if resp == 200:
-                return True, 'http://'
-        except:
-            pass
-    return False, ''
 
 
 def fetch_html(orig_url: str, folder: str = '', autoprotocol: bool = True):
