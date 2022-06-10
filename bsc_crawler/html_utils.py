@@ -3,24 +3,19 @@
 import re
 import requests
 
-# Disables warning for having SSL verification disabled
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def remove_prefix(base_url: str, urls: set[str]) -> set[str]:
     '''Removes "https://..." from a given url'''
     return set([url.removeprefix(base_url) for url in urls])
 
+
 def get_html(url: str) -> str:
     '''Returns the html from a given URL'''
-    try:
-        html: str = requests.get(
-            'https://' + url, timeout=3, verify=False).text
-    except:
-        print(f'\"{url}\" is not available')
-    if 'html' in locals():
-        return html
-    return ''
+    from url_is_live import url_is_live
+    is_live, protocol = url_is_live(url)
+    if is_live:
+        html: str = requests.get(f"{protocol}{url}", timeout=3).text
+    return html
 
 
 def get_links(html: str) -> set[str]:
