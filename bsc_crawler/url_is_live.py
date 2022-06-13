@@ -5,16 +5,17 @@ def url_is_live(url: str) -> tuple[bool, str]:
     '''Check if the url is live.
        Returns a tuple, consisting of a bool indicating if the url is live,
        and a string with the protocol used (either http or https)'''
+    resp: int = 0
     try:
         try:
-            resp: int = requests.get(f'https://{url}', timeout=3).status_code
+            resp = requests.get(f'https://{url}', timeout=3).status_code
             if resp == 200:
                 return True, 'https://'
         except:
             pass
     except:
         try:
-            resp: int = requests.get(f'http://{url}', timeout=3).status_code
+            resp = requests.get(f'http://{url}', timeout=3).status_code
             if resp == 200:
                 return True, 'http://'
         except:

@@ -24,7 +24,7 @@ def fetch_html(orig_url: str, folder: str = '', warc_folder: str = 'warcs'):
 
     if is_live:
         with capture_http(f'{warc_folder}/{orig_url.replace("/", "_")}{folder.replace("/", "_")}.warc.gz', filter_w):
-            requests.get(f'{protocol}{orig_url}{folder}', timeout=3)
+            requests.get(f'{protocol}{orig_url}{folder}', timeout=5)
             print(f'"{orig_url}{folder}" is online')
 
 
