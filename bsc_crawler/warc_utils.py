@@ -28,13 +28,14 @@ def fetch_html(orig_url: str, folder: str = '', warc_folder: str = 'warcs'):
 
 if __name__ == "__main__":
     from html_utils import get_html, remove_prefix, get_links
-    done_links: list[str] = [ 'pswsm.cat' ]
-    html: str = get_html('pswsm.cat')
-    fetch_html('pswsm.cat', warc_folder='tests/warc_utils')
-    links: set[str] = remove_prefix('pswsm.cat', get_links(html))
+    the_url: str = 'plataforma-llengua.cat'
+    done_links: list[str] = [ the_url ]
+    html: str = get_html(the_url)
+    fetch_html(the_url, warc_folder='tests/warc_utils')
+    links: set[str] = remove_prefix(the_url, get_links(html))
     print(links)
     for link in links:
         if not link.startswith('/'):
             link = f"/{link}"
-        fetch_html('pswsm.cat', folder=link, warc_folder='tests/warc_utils')
+        fetch_html(the_url, folder=link, warc_folder='tests/warc_utils')
         done_links.append(link)
