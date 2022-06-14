@@ -16,7 +16,7 @@ def last_url_index(url_list: list[str]) -> int:
                           if Path(warc.stem).stem in url_list]
     if not indexes:
         return 0
-    return max(indexes)
+    return max(indexes) + 1
 
 
 def trim_url_list(idx: int, url_list: list[str]) -> list[str]:
