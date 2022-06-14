@@ -2,6 +2,7 @@
    It is just text modification after all.'''
 import re
 import requests
+from url_is_live import url_is_live
 
 
 def remove_prefix(base_url: str, urls: set[str]) -> set[str]:
@@ -11,7 +12,6 @@ def remove_prefix(base_url: str, urls: set[str]) -> set[str]:
 
 def get_html(url: str) -> str:
     '''Returns the html from a given URL'''
-    from url_is_live import url_is_live
     is_live, protocol = url_is_live(url)
     html: str = ''
     if is_live:
