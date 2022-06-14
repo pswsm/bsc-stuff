@@ -6,7 +6,7 @@ from url_is_live import url_is_live
 
 
 def remove_prefix(base_url: str, urls: set[str]) -> set[str]:
-    '''Removes "https://..." from a given url'''
+    '''Removes "http[s]://..." from a given url'''
     return {url.removeprefix(base_url) for url in urls}
 
 
@@ -28,9 +28,8 @@ def get_links(html: str) -> set[str]:
 
 
 if __name__ == '__main__':
-    text: str = get_html('pswsm.cat')
+    text: str = get_html('aceb.cat')
     links: set[str] = get_links(text)
-    print(links)
-    for link in remove_prefix('pswsm.cat', links):
+    for link in remove_prefix('aceb.cat', links):
         print(link)
 #       print(requests.get(f'https://esperit.cat{link}').text, f"\n\n\n\n\n\n\n\n")
