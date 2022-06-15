@@ -1,7 +1,6 @@
 '''Does everything related to network and warcs'''
 from warcio.capture_http import capture_http
 import requests
-from requests.models import ReadTimeoutError
 from url_is_live import url_is_live
 
 
@@ -32,6 +31,10 @@ def fetch_html(orig_url: str, https_session: requests.Session, folder: str = '',
                 print(f'"{protocol}{orig_url}{folder}" is online')
         except requests.ReadTimeout:
             print(f"{protocol}{orig_url}{folder} was online, but it's response timed out")
+        except requests.exceptions.SSLError:
+            with capture_http(f'{warc_folder}/{orig_url.replace("/", "_")}{savefile}.warc.gz', filter_w):
+                https_session.get(f'http://{orig_url}{folder}', timeout=5)
+                print(f'"http://{orig_url}{folder}" is online')
 
 
 if __name__ == "__main__":
