@@ -1,35 +1,51 @@
-'''Does everything related to html.
-   It is just text modification after all.'''
+"""Does everything related to html.
+   It is just text modification after all."""
 import re
 import requests
 from url_is_live import url_is_live
 
 
-def remove_prefix(base_url: str, urls: set[str]) -> set[str]:
-    '''Removes "http[s]://..." from a given url'''
-    return {url.removeprefix(base_url) for url in urls}
+def correct(bad_link: str) -> str:
+    '''Corrects the link to what this program needs'''
+    if bad_link.endswith('/'):
+        return ''.join(bad_link.rsplit('/', 1))
+    if not bad_link.startswith('/'):
+        return f"/{bad_link}"
+    return bad_link
+
+
+def filter_urls(base_url: str, urls: set[str]) -> set[str]:
+    """Removes "http[s]://..." from a given url
+       and runs the "correct" function on each"""
+    return {correct(url.removeprefix(base_url)) for url in urls if url != '/'}
 
 
 def get_html(url: str) -> str:
-    '''Returns the html from a given URL'''
-    is_live, protocol = url_is_live(url)
+    """Returns the html from a given URL"""
+    is_live, protocol, _resp = url_is_live(url)
     html: str = ''
     if is_live:
-        html = requests.get(f"{protocol}{url}", timeout=3).text
+        try:
+            requests.get(f"{protocol}{url}", timeout=3)
+            html = requests.get(f"{protocol}{url}", timeout=3).text
+        except requests.exceptions.SSLError:
+            pass
+        except requests.exceptions.RequestException:
+            pass
     return html
 
 
 def get_links(html: str) -> set[str]:
-    '''Searches an html text for urls in <a>'''
+    """Searches an html text for urls in <a>"""
     # regex: str = r"<a.+href=\"((?:[\w]+\.?)?[/\w]+(?:\.cat)?)\".*>"
-    regex: str = r"<a.+href=\"(?:https://|[\w:]+\.(?!html)|http://)?([\/\w\-]+(?:\.cat)?[\/\w+\-]+)\".*>"
+    regex: str = r"<a.+href=\"(?:https://|[\w:]+\.(?!html)|http://)?(?:\.?www\.?)?([\/\w\-]+(?:\.cat)?[\/\w\-]+)\".*>"
     link_list: list[str] = re.findall(regex, html, re.UNICODE)
     return set(link_list)
 
 
-if __name__ == '__main__':
-    text: str = get_html('aceb.cat')
+if __name__ == "__main__":
+    the_url: str = '112emergencies.cat'
+    text: str = get_html(the_url)
     links: set[str] = get_links(text)
-    for link in remove_prefix('aceb.cat', links):
+    for link in filter_urls(the_url, links):
         print(link)
-#       print(requests.get(f'https://esperit.cat{link}').text, f"\n\n\n\n\n\n\n\n")
