@@ -1,4 +1,6 @@
 '''Runs the code'''
+from threading import Thread
+
 import warc_utils
 import html_utils
 import file_utils
@@ -13,8 +15,12 @@ def main():
         warc_utils.fetch_html(url)
         all_links: set[str] = html_utils.get_links(html)
         filtered_urls: set[str] = html_utils.filter_urls(url, all_links)
-        for link in filtered_urls:
-            warc_utils.fetch_html(url, folder=link)
+        threads: list[Thread] = [Thread(target=warc_utils.fetch_html, args=(url, link)) for link in filtered_urls]
+        for thr in threads:
+            thr.start()
+
+        for thr in threads:
+            thr.join()
 
 
 if __name__ == "__main__":

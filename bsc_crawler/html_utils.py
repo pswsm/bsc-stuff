@@ -7,11 +7,14 @@ from url_is_live import url_is_live
 
 def correct(bad_link: str) -> str:
     '''Corrects the link to what this program needs'''
-    if bad_link.endswith('/'):
-        return ''.join(bad_link.rsplit('/', 1))
-    if not bad_link.startswith('/'):
-        return f"/{bad_link}"
-    return bad_link
+    regex: str = r"(www\.[\w]+\.[a-z]{3})|([\w\.]+\.cat)"
+    subst = ""
+    result = re.sub(regex, subst, bad_link, 0, flags = re.MULTILINE | re.UNICODE)
+    if result.endswith('/'):
+        result = ''.join(result.rsplit('/', 1))
+    if not result.startswith('/'):
+        result = f"/{result}"
+    return result
 
 
 def filter_urls(base_url: str, urls: set[str]) -> set[str]:
@@ -44,7 +47,7 @@ def get_links(html: str) -> set[str]:
 
 
 if __name__ == "__main__":
-    the_url: str = '112emergencies.cat'
+    the_url: str = '1973.cat'
     text: str = get_html(the_url)
     links: set[str] = get_links(text)
     for link in filter_urls(the_url, links):
