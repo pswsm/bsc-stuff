@@ -1,4 +1,5 @@
 """Does everything related to network and warcs"""
+import re
 from warcio.capture_http import capture_http
 import requests
 
@@ -12,7 +13,7 @@ def fetch_html(orig_url: str, folder: str = "", warc_folder: str = "warcs"):
     savefile: str = folder.replace("/", "_")
     if len(folder) > 74:
         savefile = str([word[0]
-                       for word in set(folder.replace("/", "_").split("-"))])
+                       for word in set(savefile.split("-")) if word])
 
     if is_live:
         try:
@@ -32,11 +33,14 @@ def fetch_html(orig_url: str, folder: str = "", warc_folder: str = "warcs"):
 if __name__ == "__main__":
     from html_utils import get_html, get_links, filter_urls
 
-    the_urls: list[str] = ['12dos.cat']
+    the_urls: list[str] = ['3cat24.cat']
     for the_url in the_urls:
         html: str = get_html(the_url)
         fetch_html(the_url, warc_folder="tests/warc_utils")
         links: set[str] = filter_urls(the_url, get_links(html))
         for link in links:
-            fetch_html(the_url, folder=link, warc_folder="tests/warc_utils")
             print(link)
+            if re.search(r"[\w]\.cat", link, flags=re.UNICODE):
+                fetch_html(link, warc_folder="tests/warc_utils")
+            else:
+                fetch_html(the_url, folder=link, warc_folder="tests/warc_utils")

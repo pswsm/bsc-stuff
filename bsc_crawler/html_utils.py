@@ -7,10 +7,13 @@ from url_is_live import url_is_live
 
 def correct(bad_link: str) -> str:
     '''Corrects the link to what this program needs'''
+    regex: str = r"[\w]+\.cat"
+    if re.search(regex, bad_link, flags=re.UNICODE):
+        return bad_link
     if bad_link.endswith('/'):
-        return ''.join(bad_link.rsplit('/', 1))
+        bad_link =''.join(bad_link.rsplit('/', 1))
     if not bad_link.startswith('/'):
-        return f"/{bad_link}"
+        bad_link = f"/{bad_link}"
     return bad_link
 
 
@@ -39,12 +42,12 @@ def get_links(html: str) -> set[str]:
     """Searches an html text for urls in <a>"""
     # regex: str = r"<a.+href=\"((?:[\w]+\.?)?[/\w]+(?:\.cat)?)\".*>"
     regex: str = r"<a.+href=\"(?:https://|[\w:]+\.(?!html)|http://)?(?:\.?www\.?)?([\/\w\-]+(?:\.cat)?[\/\w\-]+)\".*>"
-    link_list: list[str] = re.findall(regex, html, re.UNICODE)
+    link_list: list[str] = re.findall(regex, html, flags=re.UNICODE)
     return set(link_list)
 
 
 if __name__ == "__main__":
-    the_url: str = '112emergencies.cat'
+    the_url: str = '3cat24.cat'
     text: str = get_html(the_url)
     links: set[str] = get_links(text)
     for link in filter_urls(the_url, links):
