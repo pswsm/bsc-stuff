@@ -1,7 +1,26 @@
 '''Runs the code'''
+import re
 import warc_utils
 import html_utils
 import file_utils
+
+
+def main_loop(url_list: list[str] = [], done_links: list[str] = []):
+    '''The main loop'''
+    for url in url_list:
+        html: str = html_utils.get_html(url)
+        warc_utils.fetch_html(url)
+        done_links.append(url)
+        all_links: set[str] = html_utils.get_links(html)
+        filtered_urls: set[str] = html_utils.filter_urls(url, all_links)
+        for link in filtered_urls:
+            if re.search(r"[\w]\.cat", link, flags=re.UNICODE):
+                warc_utils.fetch_html(link)
+                done_links.append(link)
+            else:
+                warc_utils.fetch_html(url, folder=link)
+                done_links.append(f"{url}/{link}")
+
 
 
 def main():
@@ -14,7 +33,10 @@ def main():
         all_links: set[str] = html_utils.get_links(html)
         filtered_urls: set[str] = html_utils.filter_urls(url, all_links)
         for link in filtered_urls:
-            warc_utils.fetch_html(url, folder=link)
+            if re.search(r"[\w]\.cat", link, flags=re.UNICODE):
+                warc_utils.fetch_html(link)
+            else:
+                warc_utils.fetch_html(url, folder=link)
 
 
 if __name__ == "__main__":
