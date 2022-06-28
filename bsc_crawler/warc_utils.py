@@ -12,12 +12,13 @@ def fetch_html(orig_url: str, folder: str = "", warc_folder: str = "warcs"):
     is_live, protocol, _resp = url_is_live(orig_url)
     savefile: str = folder.replace("/", "_")
     if len(folder) > 74:
-        savefile = str([word[0]
+        savefile = '-'.join([word[0]
                        for word in set(savefile.split("-")) if word])
 
     if is_live:
+        print(f'"{protocol}{orig_url}{folder}" is online')
         try:
-            requests.get(f"{protocol}{orig_url}{folder}", timeout=5)
+            test: requests.Response = requests.get(f"{protocol}{orig_url}{folder}", timeout=3)
         except requests.exceptions.SSLError:
             print(f'"{protocol}{orig_url}{folder}" has an invalid certificate. Skipping')
         except requests.exceptions.RequestException:
@@ -26,8 +27,7 @@ def fetch_html(orig_url: str, folder: str = "", warc_folder: str = "warcs"):
             with capture_http(
                 f'{warc_folder}/{orig_url.replace("/", "_")}{savefile}.warc.gz'
             ):
-                requests.get(f"{protocol}{orig_url}{folder}", timeout=5)
-                print(f'"{protocol}{orig_url}{folder}" is online')
+                requests.get(f"{protocol}{orig_url}{folder}")
 
 
 if __name__ == "__main__":

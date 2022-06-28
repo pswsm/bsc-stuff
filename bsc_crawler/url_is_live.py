@@ -27,7 +27,7 @@ def url_is_live(url: str) -> tuple[bool, str, int]:
 
 
 if __name__ == "__main__":
-    is_live, protocol, response = url_is_live('0wx.cat')
+    is_live, protocol, response = url_is_live('abcde.cat')
     print(
         f"'pswsm.cat' is live: {is_live}\nProtocol used: {protocol}\nStatus code: {response}")
     is_live, protocol, response = url_is_live('1898ramonroqueta.cat')

@@ -8,7 +8,7 @@ def get_urls(url_file: str) -> list[str]:
 
 
 def last_url_index(url_list: list[str]) -> int:
-    '''Compares the warc recors ds with the file to resume from where the process finished'''
+    '''Compares the warc recorsds with the file to resume from where the process finished'''
     warcs: list[Path] = list(Path('./warcs').glob('*.warc.gz'))
     if not warcs:
         return 0
