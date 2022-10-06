@@ -27,7 +27,15 @@ def fetch_html(orig_url: str, folder: str = "", warc_folder: str = "warcs"):
             with capture_http(
                 f'{warc_folder}/{orig_url.replace("/", "_")}{savefile}.warc.gz'
             ):
-                requests.get(f"{protocol}{orig_url}{folder}")
+                try:
+                    requests.get(f"{protocol}{orig_url}{folder}")
+                except:
+                    print("{orig_url} sucks")
+                else:
+                    requests.get(f"{protocol}{orig_url}{folder}")
+    else:
+        print(f"Skipping {protocol}{orig_url}{folder}")
+
 
 
 if __name__ == "__main__":

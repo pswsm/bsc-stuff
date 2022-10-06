@@ -47,7 +47,8 @@ def get_links(html: str) -> set[str]:
 
 
 if __name__ == "__main__":
-    the_url: str = '3cat24.cat'
+    breakpoint()
+    the_url: str = 'pswsm.cat'
     text: str = get_html(the_url)
     links: set[str] = get_links(text)
     for link in filter_urls(the_url, links):
